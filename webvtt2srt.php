@@ -7,7 +7,8 @@
 // Check command line mode
 if (empty($argv) or $argc <2)
 {
-    exit ("vtt2srt file.vtt [file.srt]\n");
+    echo ("usage instructions: \n");
+    exit ("webvtt2srt.php file.vtt [file.srt]\n");
 }
 
 // Get file paths
