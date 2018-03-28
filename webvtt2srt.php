@@ -1,46 +1,40 @@
 <?php
+
 /**
  * Example command on Linux:
- *   php webvtt2srt.php \
- *   "The Document Object Model [DOM].vtt" \
- *   "The Document Object Model [DOM].srt"
+ *   php webvtt2srt.php file.vtt [file.srt]
  */
-
 // Check command line mode
-if (empty($argv) or $argc !== 3)
+if (empty($argv) or $argc <2)
 {
-    exit ("This script only run in command line with 2 file paths as params.\n");
+    echo ("usage instructions: \n");
+    exit ("webvtt2srt.php file.vtt [file.srt]\n");
 }
 
 // Get file paths
 $webVttFile = $argv[1];
-$srtFile = $argv[2];
+
+// If srt filename was passed
+if ($argc > 2)
+{
+    $srtFile = $argv[2];
+}
+else
+{
+    $info = pathinfo($argv[1]);
+
+    $srtFile = ($info['dirname'] ? $info['dirname'] . DIRECTORY_SEPARATOR : '')
+        . $info['filename']
+        . '.srt';
+}
 
 // Read the WebVTT file content into an array of lines
-$fileHandle = fopen($webVttFile, 'r');
-if ($fileHandle)
-{
-    // Assume that every line has maximum 8192 length
-    //   If you don't care about line length then you can omit the 8192 param
-    $lines = array();
-    while (($line = fgets($fileHandle, 8192)) !== false)
-    {
-        $lines[] = $line;
-    }
-
-    if (!feof($fileHandle))
-    {
-        exit ("Error: unexpected fgets() fail\n");
-    }
-    else
-    {
-        fclose($fileHandle);
-    }
-}
+$lines = file($webVttFile);
 
 // Convert all timestamp lines
 // The first timestamp line is 3
 $length = count($lines);
+
 for ($index = 3; $index < $length; $index++)
 {
     // A line is a timestamp line if the second line above it is an empty line
